@@ -1,41 +1,90 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
     <meta charset="UTF-8">
+    <title>Nexus HUD</title>
+
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body>
-    <div id="hud-wrapper">
-        <div class="top-right-container">
-            <div class="branding-box">
-                <div class="nexus">NEXUS</div>
-                <div class="roleplay">ROLEPLAY</div>
-            </div>
-            <div class="money-box">
-                <div class="money-row"><span id="cash-text">0</span> <i class="fa-solid fa-money-bill-wave purple-icon"></i></div>
-                <div class="money-row"><span id="bank-text">0</span> <i class="fa-solid fa-credit-card purple-icon"></i></div>
-                <div id="id-text">ID: 0</div>
-            </div>
+
+<div id="hud-wrapper">
+
+    <div class="top-right-container">
+        <div class="branding-box">
+            <div class="nexus">NEXUS</div>
+            <div class="roleplay">ROLEPLAY</div>
         </div>
-        <div class="status-wrapper">
-            <div class="icon-unit"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42"></circle><circle id="health-circle" class="progress" cx="50" cy="50" r="42"></circle></svg><i class="fa-solid fa-heart status-icon"></i></div>
-            <div class="icon-unit"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42"></circle><circle id="armor-circle" class="progress" cx="50" cy="50" r="42"></circle></svg><i class="fa-solid fa-shield-halved status-icon"></i></div>
-            <div class="icon-unit"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42"></circle><circle id="hunger-circle" class="progress" cx="50" cy="50" r="42"></circle></svg><i class="fa-solid fa-utensils status-icon"></i></div>
-            <div class="icon-unit"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42"></circle><circle id="thirst-circle" class="progress" cx="50" cy="50" r="42"></circle></svg><i class="fa-solid fa-droplet status-icon"></i></div>
-        </div>
-        <div id="speed-container">
-            <svg class="speed-svg" viewBox="0 0 100 100">
-                <circle class="speed-bg" cx="50" cy="50" r="45"></circle>
-                <circle id="speed-prog" class="speed-prog" cx="50" cy="50" r="45"></circle>
-            </svg>
-            <div class="speed-text-container" style="display:flex; flex-direction:column; align-items:center; z-index:10;">
-                <div id="speed-num" class="kmh-val">0</div>
-                <div class="kmh-unit">KM/H</div>
+
+        <div class="money-box">
+            <div class="money-row">
+                <span id="cash-text">0</span>
+                <i class="fa-solid fa-money-bill-wave purple-icon"></i>
             </div>
+
+            <div class="money-row">
+                <span id="bank-text">0</span>
+                <i class="fa-solid fa-credit-card purple-icon"></i>
+            </div>
+
+            <div id="id-text">ID: 0</div>
         </div>
-        <div class="mic-box"><i id="mic" class="fa-solid fa-microphone-slash"></i></div>
     </div>
-    <script src="script.js"></script>
+
+    <div class="status-wrapper">
+        <div class="icon-unit">
+            <svg viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="42"></circle>
+                <circle id="health-circle" class="progress" cx="50" cy="50" r="42"></circle>
+            </svg>
+            <i class="fa-solid fa-heart status-icon"></i>
+        </div>
+
+        <div class="icon-unit">
+            <svg viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="42"></circle>
+                <circle id="armor-circle" class="progress" cx="50" cy="50" r="42"></circle>
+            </svg>
+            <i class="fa-solid fa-shield-halved status-icon"></i>
+        </div>
+
+        <div class="icon-unit">
+            <svg viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="42"></circle>
+                <circle id="hunger-circle" class="progress" cx="50" cy="50" r="42"></circle>
+            </svg>
+            <i class="fa-solid fa-utensils status-icon"></i>
+        </div>
+
+        <div class="icon-unit">
+            <svg viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="42"></circle>
+                <circle id="thirst-circle" class="progress" cx="50" cy="50" r="42"></circle>
+            </svg>
+            <i class="fa-solid fa-droplet status-icon"></i>
+        </div>
+    </div>
+
+    <div id="speed-container">
+        <svg viewBox="0 0 100 100">
+            <circle class="speed-bg" cx="50" cy="50" r="45"></circle>
+            <circle id="speed-prog" cx="50" cy="50" r="45"></circle>
+        </svg>
+
+        <div class="speed-text-container">
+            <div id="speed-num">0</div>
+            <div class="kmh-unit">KM/H</div>
+        </div>
+    </div>
+
+    <div class="mic-box">
+        <i id="mic" class="fa-solid fa-microphone-slash"></i>
+    </div>
+
+</div>
+
+<script src="main.js"></script>
 </body>
 </html>
