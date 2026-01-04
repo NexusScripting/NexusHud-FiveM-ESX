@@ -1,9 +1,7 @@
--- Nexus Development - NexusHud Client
 local ESX = nil
 local isHudHidden = false
 local lastTalking = false
 
--- Fix: Sicherer ESX Loader (ersetzt den fehlerhaften Export)
 Citizen.CreateThread(function()
     while ESX == nil do
         TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
@@ -11,10 +9,9 @@ Citizen.CreateThread(function()
     end
 end)
 
--- Mic Update Loop
 Citizen.CreateThread(function()
     while true do
-        Wait(200) -- Erhöht auf 200ms für bessere Performance
+        Wait(200)
         local isTalking = NetworkIsPlayerTalking(PlayerId()) or IsControlPressed(0, 249)
         if isTalking ~= lastTalking then
             lastTalking = isTalking
@@ -23,7 +20,6 @@ Citizen.CreateThread(function()
     end
 end)
 
--- Health, Armor & Speed Loop
 Citizen.CreateThread(function()
     while true do
         local playerPed = PlayerPedId()
@@ -63,9 +59,7 @@ Citizen.CreateThread(function()
     end
 end)
 
--- Status, Money & ID Loop
 Citizen.CreateThread(function()
-    -- Warten bis ESX geladen ist und der Player bereit ist
     while ESX == nil do Wait(100) end
     while not ESX.IsPlayerLoaded() do Wait(500) end
 
@@ -96,7 +90,6 @@ Citizen.CreateThread(function()
     end
 end)
 
--- Pause Menu Fade
 Citizen.CreateThread(function()
     while true do
         Wait(300)
