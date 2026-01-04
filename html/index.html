@@ -3,32 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <title>Nexus HUD</title>
-
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
 <body>
 
 <div id="hud-wrapper">
-
     <div class="top-right-container">
         <div class="branding-box">
             <div class="nexus">NEXUS</div>
             <div class="roleplay">ROLEPLAY</div>
         </div>
-
         <div class="money-box">
             <div class="money-row">
                 <span id="cash-text">0</span>
                 <i class="fa-solid fa-money-bill-wave purple-icon"></i>
             </div>
-
             <div class="money-row">
                 <span id="bank-text">0</span>
                 <i class="fa-solid fa-credit-card purple-icon"></i>
             </div>
-
             <div id="id-text">ID: 0</div>
         </div>
     </div>
@@ -41,7 +35,6 @@
             </svg>
             <i class="fa-solid fa-heart status-icon"></i>
         </div>
-
         <div class="icon-unit">
             <svg viewBox="0 0 100 100">
                 <circle cx="50" cy="50" r="42"></circle>
@@ -49,7 +42,6 @@
             </svg>
             <i class="fa-solid fa-shield-halved status-icon"></i>
         </div>
-
         <div class="icon-unit">
             <svg viewBox="0 0 100 100">
                 <circle cx="50" cy="50" r="42"></circle>
@@ -57,7 +49,6 @@
             </svg>
             <i class="fa-solid fa-utensils status-icon"></i>
         </div>
-
         <div class="icon-unit">
             <svg viewBox="0 0 100 100">
                 <circle cx="50" cy="50" r="42"></circle>
@@ -67,24 +58,26 @@
         </div>
     </div>
 
-    <div id="speed-container">
-        <svg viewBox="0 0 100 100">
-            <circle class="speed-bg" cx="50" cy="50" r="45"></circle>
-            <circle id="speed-prog" cx="50" cy="50" r="45"></circle>
-        </svg>
-
-        <div class="speed-text-container">
-            <div id="speed-num">0</div>
-            <div class="kmh-unit">KM/H</div>
+    <div id="speedo-container">
+        <div class="speedo-main">
+            <div class="speedo-info">
+                <div id="speed-val">0</div>
+                <div class="speed-unit">KM/H</div>
+            </div>
+            <div class="gear-box">
+                <span id="gear-val">N</span>
+            </div>
+        </div>
+        <div class="rpm-bar-bg">
+            <div id="rpm-bar-fill"></div>
         </div>
     </div>
 
     <div class="mic-box">
         <i id="mic" class="fa-solid fa-microphone-slash"></i>
     </div>
-
 </div>
 
-<script src="main.js"></script>
+<script src="script.js"></script>
 </body>
 </html>

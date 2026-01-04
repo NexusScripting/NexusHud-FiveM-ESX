@@ -1,12 +1,10 @@
-local ESX
+local ESX = nil
 local hudHidden = false
-local lastMicState = false
+local lastTalking = false
 
 CreateThread(function()
-    while not ESX do
-        TriggerEvent('esx:getSharedObject', function(obj)
-            ESX = obj
-        end)
+    while ESX == nil do
+        TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
         Wait(100)
     end
 end)
@@ -19,11 +17,10 @@ end)
 CreateThread(function()
     while true do
         Wait(150)
-
         local talking = NetworkIsPlayerTalking(PlayerId()) or IsControlPressed(0, 249)
 
-        if talking ~= lastMicState then
-            lastMicState = talking
+        if talking ~= lastTalking then
+            lastTalking = talking
             SendNUIMessage({
                 action = "updateMic",
                 talking = talking
@@ -35,29 +32,33 @@ end)
 CreateThread(function()
     while true do
         local ped = PlayerPedId()
-        local sleep = 400
-
+        local sleep = 500
+        
         local health = GetEntityHealth(ped)
         local maxHealth = GetEntityMaxHealth(ped)
         local armor = GetPedArmour(ped)
-
         local shownHealth = 0
+
         if health > 100 then
             shownHealth = math.floor((health - 100) / (maxHealth - 100) * 100)
         end
-
-        if IsEntityDead(ped) then
-            shownHealth = 0
-        end
+        if IsEntityDead(ped) then shownHealth = 0 end
 
         local veh = GetVehiclePedIsIn(ped, false)
+        if veh ~= 0 and GetPedInVehicleSeat(veh, -1) == ped then
+            sleep = 80
+            local speed = math.floor(GetEntitySpeed(veh) * 3.6)
+            local gear = GetVehicleCurrentGear(veh)
+            local rpm = GetVehicleCurrentRpm(veh)
 
-        if veh ~= 0 then
-            sleep = 75
+            if speed == 0 and gear <= 1 then gear = "N" end
+
             SendNUIMessage({
                 action = "updateFast",
                 inVehicle = true,
-                speed = math.floor(GetEntitySpeed(veh) * 3.6),
+                speed = speed,
+                gear = gear,
+                rpm = rpm,
                 health = shownHealth,
                 armor = armor
             })
@@ -69,14 +70,12 @@ CreateThread(function()
                 armor = armor
             })
         end
-
         Wait(sleep)
     end
 end)
 
 CreateThread(function()
-    while not ESX do Wait(100) end
-    while not ESX.IsPlayerLoaded() do Wait(500) end
+    while ESX == nil or not ESX.IsPlayerLoaded() do Wait(500) end
 
     while true do
         local data = ESX.GetPlayerData()
@@ -93,14 +92,8 @@ CreateThread(function()
         end
 
         local hunger, thirst = 0, 0
-
-        TriggerEvent('esx_status:getStatus', 'hunger', function(s)
-            if s then hunger = s.getPercent() end
-        end)
-
-        TriggerEvent('esx_status:getStatus', 'thirst', function(s)
-            if s then thirst = s.getPercent() end
-        end)
+        TriggerEvent('esx_status:getStatus', 'hunger', function(s) if s then hunger = s.getPercent() end end)
+        TriggerEvent('esx_status:getStatus', 'thirst', function(s) if s then thirst = s.getPercent() end end)
 
         SendNUIMessage({
             action = "updateStatus",
@@ -110,7 +103,6 @@ CreateThread(function()
             thirst = thirst,
             id = GetPlayerServerId(PlayerId())
         })
-
         Wait(1000)
     end
 end)
@@ -118,11 +110,12 @@ end)
 CreateThread(function()
     while true do
         Wait(300)
+        local active = IsPauseMenuActive()
 
-        if IsPauseMenuActive() and not hudHidden then
+        if active and not hudHidden then
             hudHidden = true
             SendNUIMessage({ action = "fade", state = true })
-        elseif not IsPauseMenuActive() and hudHidden then
+        elseif not active and hudHidden then
             hudHidden = false
             SendNUIMessage({ action = "fade", state = false })
         end
