@@ -14,3 +14,6 @@ NexusHud is a clean interface for ESX servers that removes all black backgrounds
 
 ## Customization
 You can change all colors and the server name directly in the `html/style.css` and `html/index.html` files.
+
+
+If you encounter any bugs feel free to reach out: https://discord.gg/8JZJ4WJUqH
