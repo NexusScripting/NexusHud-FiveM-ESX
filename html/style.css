@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Roboto:wght@900&display=swap');
+/* Importiert jetzt verschiedene Font-Weights */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;500;700&display=swap');
 
 :root {
     --primary: #a020f0; 
@@ -12,21 +13,18 @@ body {
     margin: 0; padding: 0; overflow: hidden; font-family: 'Roboto', sans-serif; 
     background: transparent !important;
     -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+    user-select: none; /* Verhindert das "Blau-Werden" */
 }
 
 #edit-notify {
     display: none; position: absolute; top: 50px; left: 50%;
     transform: translateX(-50%); background: rgba(0,0,0,0.85);
     color: white; padding: 14px 30px; border-radius: 6px;
-    font-weight: 900; border-bottom: 4px solid var(--primary); z-index: 1000;
+    font-weight: 700; border-bottom: 4px solid var(--primary); z-index: 1000;
 }
 
 body.edit-mode #edit-notify { display: block; }
 
-/* FIX: Sorgt dafür, dass die lilanen Boxen nur so groß sind wie der Inhalt */
 .drag-item { 
     position: absolute; 
     width: fit-content; 
@@ -41,15 +39,26 @@ body.edit-mode #edit-notify { display: block; }
 }
 
 #drag-branding { top: 40px; right: 50px; }
-.branding-box { display: flex; flex-direction: column; align-items: center; margin-bottom: 15px; }
+.branding-box { display: flex; flex-direction: column; align-items: center; margin-bottom: 10px; }
 
-.nexus { color: var(--primary); font-family: 'Orbitron', sans-serif; font-size: 44px; text-shadow: 0 0 15px var(--primary); letter-spacing: 7px; }
-.roleplay { font-size: 58px; color: white; margin-top: -15px; font-weight: 900; }
+/* Branding - Deutlich cleanerer Look durch weniger Font-Weight */
+.nexus { 
+    color: var(--primary); font-family: 'Orbitron', sans-serif; 
+    font-size: 40px; text-shadow: 0 0 12px var(--primary); 
+    letter-spacing: 7px; font-weight: 400; 
+}
+.roleplay { 
+    font-size: 54px; color: white; margin-top: -15px; 
+    font-weight: 700; letter-spacing: 2px;
+}
 
 .money-box { display: flex; flex-direction: column; align-items: flex-end; }
-.money-row { color: white; font-size: 30px; font-weight: 900; display: flex; align-items: center; margin-bottom: 5px; }
-.purple-icon { color: var(--primary); margin-left: 14px; font-size: 24px; filter: drop-shadow(0 0 6px var(--primary)); }
-#id-text { font-size: 32px; color: white; font-weight: 900; margin-top: 6px; }
+.money-row { 
+    color: white; font-size: 28px; font-weight: 500; 
+    display: flex; align-items: center; margin-bottom: 4px; 
+}
+.purple-icon { color: var(--primary); margin-left: 14px; font-size: 22px; filter: drop-shadow(0 0 6px var(--primary)); }
+#id-text { font-size: 30px; color: white; font-weight: 700; margin-top: 6px; opacity: 0.9; }
 
 #drag-status { 
     display: flex; gap: 15px; justify-content: center; align-items: center; width: fit-content; 
@@ -74,9 +83,9 @@ body.edit-mode #edit-notify { display: block; }
 #speedo-container { display: none; flex-direction: column; align-items: center; }
 .speedo-main { display: flex; align-items: center; gap: 18px; }
 .speed-info { display: flex; flex-direction: column; align-items: center; }
-#speed-val { font-size: 68px; color: white; font-weight: 900; line-height: 0.8; }
-.speed-unit { font-size: 22px; color: #aaaaaa; font-weight: 900; margin-top: 5px; }
-.gear-box { border: 2px solid rgba(255,255,255,0.45); background: rgba(0,0,0,0.35); border-radius: 9px; padding: 7px 14px; color: white; font-weight: 900; font-size: 30px; }
+#speed-val { font-size: 65px; color: white; font-weight: 700; line-height: 0.8; }
+.speed-unit { font-size: 20px; color: #aaaaaa; font-weight: 500; margin-top: 5px; }
+.gear-box { border: 2px solid rgba(255,255,255,0.4); background: rgba(0,0,0,0.35); border-radius: 9px; padding: 7px 14px; color: white; font-weight: 700; font-size: 28px; }
 .rpm-bar-bg { width: 160px; height: 7px; background: rgba(255,255,255,0.15); margin-top: 12px; border-radius: 4px; overflow: hidden; }
 #rpm-bar-fill { height: 100%; background: linear-gradient(90deg, #ffffff 0%, #ffffff 15%, var(--primary) 35%); width: 0%; transition: 0.04s linear; box-shadow: 0 0 12px var(--primary); }
 

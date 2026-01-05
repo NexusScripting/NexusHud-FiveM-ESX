@@ -16,17 +16,17 @@ function loadPositions() {
 }
 
 function updateCircle(id, val) {
-    const c = document.getElementById(id);
-    if (c) {
-        let dashOffset = 264 - (val / 100 * 264);
-        c.style.strokeDashoffset = dashOffset;
+    const el = document.getElementById(id);
+    if (el) {
+        let offset = 264 - (val / 100 * 264);
+        el.style.strokeDashoffset = offset;
     }
 }
 
 window.addEventListener('message', (event) => {
-    const data = event.data;
+    const payload = event.data;
     
-    if (data.action === "resetHud") {
+    if (payload.action === "resetHud") {
         localStorage.removeItem('nexus_pos_v2');
         document.querySelectorAll('.drag-item').forEach(e => {
             e.style.top = ''; e.style.left = ''; e.style.right = ''; e.style.bottom = ''; e.style.transform = '';
@@ -35,62 +35,64 @@ window.addEventListener('message', (event) => {
         return;
     }
 
-    if (data.action === "init") {
-        if (data.colors) {
+    if (payload.action === "init") {
+        if (payload.colors) {
             const root = document.documentElement;
-            root.style.setProperty('--primary', data.colors.primary);
-            root.style.setProperty('--health', data.colors.health);
-            root.style.setProperty('--armor', data.colors.armor);
-            root.style.setProperty('--hunger', data.colors.hunger);
-            root.style.setProperty('--thirst', data.colors.thirst);
+            root.style.setProperty('--primary', payload.colors.primary);
+            root.style.setProperty('--health', payload.colors.health);
+            root.style.setProperty('--armor', payload.colors.armor);
+            root.style.setProperty('--hunger', payload.colors.hunger);
+            root.style.setProperty('--thirst', payload.colors.thirst);
         }
-        if (data.branding) {
-            document.querySelector('.nexus').innerText = data.branding.name1;
-            document.querySelector('.roleplay').innerText = data.branding.name2;
+        if (payload.branding) {
+            document.querySelector('.nexus').innerText = payload.branding.name1;
+            document.querySelector('.roleplay').innerText = payload.branding.name2;
         }
-        if (data.settings) {
-            document.getElementById('id-text').style.display = data.settings.showID ? 'block' : 'none';
-            document.getElementById('drag-status').style.display = data.settings.showStatus ? 'flex' : 'none';
-            document.getElementById('drag-mic').style.display = data.settings.showMic ? 'block' : 'none';
+        if (payload.settings) {
+            document.getElementById('id-text').style.display = payload.settings.showID ? 'block' : 'none';
+            document.getElementById('drag-status').style.display = payload.settings.showStatus ? 'flex' : 'none';
+            document.getElementById('drag-mic').style.display = payload.settings.showMic ? 'block' : 'none';
         }
         loadPositions();
     }
 
-    if (data.action === "forceHide") { forceHidden = data.state; }
+    if (payload.action === "forceHide") { forceHidden = payload.state; }
     
-    if (data.action === "toggleEdit") {
-        isEditMode = data.state;
+    if (payload.action === "toggleEdit") {
+        isEditMode = payload.state;
         document.body.classList.toggle('edit-mode', isEditMode);
     }
 
-    if (data.action === "tick") {
-        document.body.style.display = (data.paused || forceHidden) ? 'none' : 'block';
+    if (payload.action === "tick") {
+        // Sicherstellen, dass das HUD angezeigt wird wenn nicht pausiert
+        document.body.style.display = (payload.paused || forceHidden) ? 'none' : 'block';
         
-        if (!isEditMode && data.mapPos) {
+        if (!isEditMode && payload.mapPos) {
             const statusBox = document.getElementById('drag-status');
-            const saved = JSON.parse(localStorage.getItem('nexus_pos_v2') || '{}');
-            if (!saved['drag-status']) {
-                statusBox.style.left = (data.mapPos.x + (data.mapPos.w / 2) - 2.0) + "%";
-                statusBox.style.top = (data.mapPos.y - 3.5) + "%";
+            const savedPos = JSON.parse(localStorage.getItem('nexus_pos_v2') || '{}');
+            if (!savedPos['drag-status']) {
+                // Ein Ticken weiter nach links (-3.6) für perfekte Symmetrie
+                statusBox.style.left = (payload.mapPos.x + (payload.mapPos.w / 2) - 3.6) + "%";
+                statusBox.style.top = (payload.mapPos.y - 4.1) + "%";
                 statusBox.style.transform = 'translateX(-50%)';
                 statusBox.style.bottom = 'auto';
                 statusBox.style.right = 'auto';
             }
         }
 
-        updateCircle('health-circle', data.hp);
-        updateCircle('armor-circle', data.arm);
+        updateCircle('health-circle', payload.hp);
+        updateCircle('armor-circle', payload.arm);
         
-        const speedo = document.getElementById('speedo-container');
-        if (data.inVeh) {
-            speedo.style.display = 'flex';
-            document.getElementById('speed-val').innerText = data.spd;
-            document.getElementById('gear-val').innerText = data.gear;
-            document.getElementById('rpm-bar-fill').style.width = (data.rpm * 100) + "%";
-        } else { speedo.style.display = 'none'; }
+        const vehHud = document.getElementById('speedo-container');
+        if (payload.inVeh) {
+            vehHud.style.display = 'flex';
+            document.getElementById('speed-val').innerText = payload.spd;
+            document.getElementById('gear-val').innerText = payload.gear;
+            document.getElementById('rpm-bar-fill').style.width = (payload.rpm * 100) + "%";
+        } else { vehHud.style.display = 'none'; }
 
         const mic = document.getElementById('mic');
-        if (data.talking) {
+        if (payload.talking) {
             mic.classList.add('active');
             mic.classList.replace('fa-microphone-slash', 'fa-microphone');
         } else {
@@ -99,37 +101,37 @@ window.addEventListener('message', (event) => {
         }
     }
 
-    if (data.action === "updateStats") {
-        updateCircle('hunger-circle', data.h);
-        updateCircle('thirst-circle', data.t);
+    if (payload.action === "updateStats") {
+        updateCircle('hunger-circle', payload.h);
+        updateCircle('thirst-circle', payload.t);
     }
 
-    if (data.action === "status") {
-        if (data.cash !== undefined) document.getElementById('cash-text').innerText = data.cash.toLocaleString();
-        if (data.bank !== undefined) document.getElementById('bank-text').innerText = data.bank.toLocaleString();
-        if (data.sid !== undefined) document.getElementById('id-text').innerText = "ID: " + data.sid;
+    if (payload.action === "status") {
+        if (payload.cash !== undefined) document.getElementById('cash-text').innerText = payload.cash.toLocaleString();
+        if (payload.bank !== undefined) document.getElementById('bank-text').innerText = payload.bank.toLocaleString();
+        if (payload.sid !== undefined) document.getElementById('id-text').innerText = "ID: " + payload.sid;
     }
 });
 
-let dragging_item = null;
+let current_drag = null;
 document.addEventListener('mousedown', (e) => {
     if (!isEditMode) return;
-    dragging_item = e.target.closest('.drag-item');
-    if (dragging_item) dragging_item.style.transform = 'none';
+    current_drag = e.target.closest('.drag-item');
+    if (current_drag) current_drag.style.transform = 'none';
 });
 
 document.addEventListener('mousemove', (e) => {
-    if (!isEditMode || !dragging_item) return;
-    dragging_item.style.left = e.clientX - (dragging_item.offsetWidth/2) + "px";
-    dragging_item.style.top = e.clientY - (dragging_item.offsetHeight/2) + "px";
+    if (!isEditMode || !current_drag) return;
+    current_drag.style.left = e.clientX - (current_drag.offsetWidth/2) + "px";
+    current_drag.style.top = e.clientY - (current_drag.offsetHeight/2) + "px";
 });
 
 document.addEventListener('mouseup', () => {
-    if (dragging_item) {
-        const s = JSON.parse(localStorage.getItem('nexus_pos_v2') || '{}');
-        s[dragging_item.id] = { t: dragging_item.style.top, l: dragging_item.style.left };
-        localStorage.setItem('nexus_pos_v2', JSON.stringify(s));
-        dragging_item = null;
+    if (current_drag) {
+        const speicher = JSON.parse(localStorage.getItem('nexus_pos_v2') || '{}');
+        speicher[current_drag.id] = { t: current_drag.style.top, l: current_drag.style.left };
+        localStorage.setItem('nexus_pos_v2', JSON.stringify(speicher));
+        current_drag = null;
     }
 });
 

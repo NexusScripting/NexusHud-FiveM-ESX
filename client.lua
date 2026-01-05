@@ -1,6 +1,6 @@
 local ESX = exports['es_extended']:getSharedObject()
-local is_nui_ready = false
-local hud_edit_active = false
+local is_nui_fertig = false
+local im_edit_modus = false
 
 function GetMinimapAnchor()
     local aspect_ratio = GetAspectRatio(0)
@@ -19,31 +19,31 @@ function GetMinimapAnchor()
     return Minimap
 end
 
-local function UpdateClientMoney()
+local function UpdateMoneyHUD()
     local xPlayer = ESX.GetPlayerData()
     if xPlayer and xPlayer.accounts then
-        local cash, bank = 0, 0
-        for _, acc in pairs(xPlayer.accounts) do
-            if acc.name == 'money' or acc.name == 'cash' then cash = acc.money
-            elseif acc.name == 'bank' then bank = acc.money end
+        local geld, bank = 0, 0
+        for _, account in pairs(xPlayer.accounts) do
+            if account.name == 'money' or account.name == 'cash' then geld = account.money
+            elseif account.name == 'bank' then bank = account.money end
         end
         SendNUIMessage({
             action = "status",
-            cash = cash, 
+            cash = geld, 
             bank = bank,
             sid = GetPlayerServerId(PlayerId())
         })
     end
 end
 
-exports('SetHudVisible', function(state)
-    SendNUIMessage({ action = "forceHide", state = not state })
+exports('SetHudVisible', function(status)
+    SendNUIMessage({ action = "forceHide", state = not status })
 end)
 
 RegisterCommand('edithud', function()
-    hud_edit_active = not hud_edit_active
-    SetNuiFocus(hud_edit_active, hud_edit_active)
-    SendNUIMessage({ action = "toggleEdit", state = hud_edit_active })
+    im_edit_modus = not im_edit_modus
+    SetNuiFocus(im_edit_modus, im_edit_modus)
+    SendNUIMessage({ action = "toggleEdit", state = im_edit_modus })
 end)
 
 RegisterCommand('hudreset', function() 
@@ -51,73 +51,73 @@ RegisterCommand('hudreset', function()
 end)
 
 RegisterNUICallback('closeEdit', function(data, cb)
-    hud_edit_active = false
+    im_edit_modus = false
     SetNuiFocus(false, false)
     SendNUIMessage({ action = "toggleEdit", state = false })
     cb('ok')
 end)
 
 RegisterNUICallback('nuiReady', function(data, cb)
-    is_nui_ready = true
+    is_nui_fertig = true
     SendNUIMessage({ action = "init", colors = Config.Colors, branding = Config.Branding, settings = Config.Settings })
-    UpdateClientMoney()
+    UpdateMoneyHUD()
     cb('ok')
 end)
 
 RegisterNetEvent('esx:setAccountMoney')
 AddEventHandler('esx:setAccountMoney', function(account) 
-    UpdateClientMoney() 
+    UpdateMoneyHUD() 
 end)
 
 RegisterNetEvent('esx:playerLoaded')
 AddEventHandler('esx:playerLoaded', function(xPlayer)
-    UpdateClientMoney()
+    UpdateMoneyHUD()
 end)
 
 AddEventHandler('esx_status:onTick', function(stats)
-    local h, t = 0, 0
-    for i, s in pairs(stats) do
-        if s.name == 'hunger' then h = s.percent
-        elseif s.name == 'thirst' then t = s.percent end
+    local hunger, durst = 0, 0
+    for _, s in pairs(stats) do
+        if s.name == 'hunger' then hunger = s.percent
+        elseif s.name == 'thirst' then durst = s.percent end
     end
-    SendNUIMessage({ action = "updateStats", h = h, t = t })
+    SendNUIMessage({ action = "updateStats", h = hunger, t = durst })
 end)
 
 CreateThread(function()
-    local sync_timer = 0
+    local dings_timer = 0
     while true do
-        local sleep = 1200
-        if is_nui_ready then
-            local p_ped = PlayerPedId()
-            local p_veh = GetVehiclePedIsIn(p_ped, false)
-            local driving = (p_veh ~= 0 and GetPedInVehicleSeat(p_veh, -1) == p_ped)
+        local schlafen = 1100
+        if is_nui_fertig then
+            local ped = PlayerPedId()
+            local veh = GetVehiclePedIsIn(ped, false)
+            local im_auto = (veh ~= 0 and GetPedInVehicleSeat(veh, -1) == ped)
             
-            if driving then 
-                sleep = 50 
+            if im_auto then 
+                schlafen = 50 
             elseif NetworkIsPlayerTalking(PlayerId()) then
-                sleep = 200
+                schlafen = 200
             end
             
-            sync_timer = sync_timer + sleep
-            if sync_timer >= 4500 then 
-                UpdateClientMoney()
-                sync_timer = 0 
+            dings_timer = dings_timer + schlafen
+            if dings_timer >= 4000 then 
+                UpdateMoneyHUD()
+                dings_timer = 0 
             end
 
             local map = GetMinimapAnchor()
             SendNUIMessage({
                 action = "tick",
-                inVeh = driving,
-                spd = driving and math.floor(GetEntitySpeed(p_veh) * 3.6) or 0,
-                gear = driving and (GetVehicleCurrentGear(p_veh) == 0 and "R" or GetVehicleCurrentGear(p_veh)) or "N",
-                rpm = driving and GetVehicleCurrentRpm(p_veh) or 0,
-                hp = GetEntityHealth(p_ped) - 100,
-                arm = GetPedArmour(p_ped),
+                inVeh = im_auto,
+                spd = im_auto and math.floor(GetEntitySpeed(veh) * 3.6) or 0,
+                gear = im_auto and (GetVehicleCurrentGear(veh) == 0 and "R" or GetVehicleCurrentGear(veh)) or "N",
+                rpm = im_auto and GetVehicleCurrentRpm(veh) or 0,
+                hp = GetEntityHealth(ped) - 100,
+                arm = GetPedArmour(ped),
                 talking = NetworkIsPlayerTalking(PlayerId()),
                 paused = IsPauseMenuActive(),
                 mapPos = { x = map.x * 100, w = map.width * 100, y = map.y * 100 }
             })
         end
-        Wait(sleep)
+        Wait(schlafen)
     end
 end)
