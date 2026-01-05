@@ -1,9 +1,9 @@
 fx_version 'cerulean'
 game 'gta5'
 
-author 'NexusScripting'
-description 'NexusHud'
-version '1.2'
+author 'NexusDevelopment'
+description 'NexusHud - Best HUD for ESX'
+version '1.4'
 
 ui_page 'html/index.html'
 

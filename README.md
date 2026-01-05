@@ -6,6 +6,7 @@ NexusHud is a clean interface for ESX servers that removes all black backgrounds
 - **Large ID Visibility:** Player ID is enlarged and mathematically centered.
 - **Status Gauges:** Circular rings for health, armor, food, and water.
 - **Auto-Speedometer:** Smooth UI that pops up automatically when driving.
+- **Edit-Mode:** Edit your HUD with /edithud and reset it with /hudreset
 - **Performance:** 0.00ms in idle.
 
 ## Installation

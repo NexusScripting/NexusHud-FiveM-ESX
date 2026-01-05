@@ -1,97 +1,124 @@
-local ESX = nil
-local isNuiReady = false
+local ESX = exports['es_extended']:getSharedObject()
+local is_nui_ready = false
+local hud_edit_mode = false
 
-CreateThread(function()
-    while ESX == nil do
-        local status, result = pcall(function() return exports['es_extended']:getSharedObject() end)
-        if status then ESX = result else TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end) end
-        Wait(100)
+function GetMinimapAnchor()
+    local aspect_ratio = GetAspectRatio(0)
+    local res_x, res_y = GetActiveScreenResolution()
+    local xscale = 1.0 / res_x
+    local yscale = 1.0 / res_y
+    local Minimap = {}
+    Minimap.width = xscale * (res_x / (4 * aspect_ratio))
+    Minimap.height = yscale * (res_y / 5.674)
+    Minimap.left_x = xscale * (res_x * (1.0 / 20.0))
+    if aspect_ratio > 2 then Minimap.left_x = Minimap.left_x * 0.8 end
+    Minimap.bottom_y = 1.0 - yscale * (res_y * (1.0 / 20.0))
+    Minimap.top_y = Minimap.bottom_y - Minimap.height
+    Minimap.x = Minimap.left_x
+    Minimap.y = Minimap.top_y
+    return Minimap
+end
+
+local function UpdatePlayerMoney()
+    local pData = ESX.GetPlayerData()
+    if pData and pData.accounts then
+        local cash_amount, bank_amount = 0, 0
+        for _, acc in pairs(pData.accounts) do
+            if acc.name == 'money' or acc.name == 'cash' then cash_amount = acc.money
+            elseif acc.name == 'bank' then bank_amount = acc.money end
+        end
+        SendNUIMessage({
+            action = "status",
+            cash = cash_amount, 
+            bank = bank_amount,
+            sid = GetPlayerServerId(PlayerId())
+        })
     end
+end
+
+exports('SetHudVisible', function(state)
+    SendNUIMessage({ action = "forceHide", state = not state })
 end)
 
-function updateMoney()
-    if not ESX then return end
-    local data = ESX.GetPlayerData()
-    local m, b = 0, 0
-    if data and data.accounts then
-        for _, acc in pairs(data.accounts) do
-            if acc.name == 'money' or acc.name == 'cash' then m = acc.money
-            elseif acc.name == 'bank' then b = acc.money end
-        end
-    end
-    SendNUIMessage({
-        action = "status",
-        cash = m, 
-        bank = b,
-        sid = GetPlayerServerId(PlayerId())
-    })
-end
+RegisterCommand('edithud', function()
+    hud_edit_mode = not hud_edit_mode
+    SetNuiFocus(hud_edit_mode, hud_edit_mode)
+    SendNUIMessage({ action = "toggleEdit", state = hud_edit_mode })
+end)
 
-function triggerInit()
-    if not isNuiReady or not ESX then return end
-    SendNUIMessage({
-        action = "init",
-        colors = Config.Colors,
-        branding = Config.Branding
-    })
-    updateMoney()
-end
+RegisterCommand('hudreset', function() 
+    SendNUIMessage({ action = "resetHud" }) 
+end)
+
+RegisterNUICallback('closeEdit', function(data, cb)
+    hud_edit_mode = false
+    SetNuiFocus(false, false)
+    SendNUIMessage({ action = "toggleEdit", state = false })
+    cb('ok')
+end)
 
 RegisterNUICallback('nuiReady', function(data, cb)
-    isNuiReady = true
+    is_nui_ready = true
+    SendNUIMessage({ action = "init", colors = Config.Colors, branding = Config.Branding, settings = Config.Settings })
+    UpdatePlayerMoney()
     cb('ok')
-    CreateThread(function()
-        while ESX == nil or not ESX.IsPlayerLoaded() do Wait(100) end
-        triggerInit()
-    end)
 end)
 
-AddEventHandler('onClientResourceStart', function(res)
-    if GetCurrentResourceName() ~= res then return end
-    if isNuiReady and ESX and ESX.IsPlayerLoaded() then triggerInit() end
+-- Hier ist der Fix für "not safe for net"
+RegisterNetEvent('esx:setAccountMoney')
+AddEventHandler('esx:setAccountMoney', function(account) 
+    UpdatePlayerMoney() 
 end)
 
 RegisterNetEvent('esx:playerLoaded')
-AddEventHandler('esx:playerLoaded', function(x)
-    ESX.PlayerData = x
-    if isNuiReady then triggerInit() end
+AddEventHandler('esx:playerLoaded', function(xPlayer)
+    UpdatePlayerMoney()
 end)
 
-RegisterNetEvent('esx:setAccountMoney')
-AddEventHandler('esx:setAccountMoney', function() updateMoney() end)
-
-AddEventHandler('esx_status:onTick', function(data)
-    local h, t = 0, 0
-    for _, s in pairs(data) do
-        if s.name == 'hunger' then h = s.percent
-        elseif s.name == 'thirst' then t = s.percent end
+AddEventHandler('esx_status:onTick', function(all_stats)
+    local h_perc, t_perc = 0, 0
+    for i, s in pairs(all_stats) do
+        if s.name == 'hunger' then h_perc = s.percent
+        elseif s.name == 'thirst' then t_perc = s.percent end
     end
-    SendNUIMessage({ action = "updateStats", h = h, t = t })
+    SendNUIMessage({ action = "updateStats", h = h_perc, t = t_perc })
 end)
 
 CreateThread(function()
+    local refresh_timer = 0
     while true do
-        local p = PlayerPedId()
-        local sleep = 500
-        if isNuiReady then
-            local hp, arm = GetEntityHealth(p) - 100, GetPedArmour(p)
-            if hp < 0 then hp = 0 end
-            local v = GetVehiclePedIsIn(p, false)
-            local inV, s, g, r = false, 0, 0, 0
-            if v ~= 0 and GetPedInVehicleSeat(v, -1) == p then
-                inV, sleep = true, 100
-                s = math.floor(GetEntitySpeed(v) * 3.6)
-                g, r = GetVehicleCurrentGear(v), GetVehicleCurrentRpm(v)
-                if s == 0 and g <= 1 then g = "N" end
+        local sleep_time = 1200
+        if is_nui_ready then
+            local p_ped = PlayerPedId()
+            local p_veh = GetVehiclePedIsIn(p_ped, false)
+            local is_in_veh = (p_veh ~= 0 and GetPedInVehicleSeat(p_veh, -1) == p_ped)
+            
+            if is_in_veh then 
+                sleep_time = 50 
+            elseif NetworkIsPlayerTalking(PlayerId()) then
+                sleep_time = 220
             end
+            
+            refresh_timer = refresh_timer + sleep_time
+            if refresh_timer >= 5000 then -- Sync alle 5 Sek reicht dicke
+                UpdatePlayerMoney()
+                refresh_timer = 0 
+            end
+
+            local map_anchor = GetMinimapAnchor()
             SendNUIMessage({
                 action = "tick",
-                inVeh = inV, spd = s, gear = g, rpm = r,
-                hp = hp, arm = arm,
+                inVeh = is_in_veh,
+                spd = is_in_veh and math.floor(GetEntitySpeed(p_veh) * 3.6) or 0,
+                gear = is_in_veh and (GetVehicleCurrentGear(p_veh) == 0 and "R" or GetVehicleCurrentGear(p_veh)) or "N",
+                rpm = is_in_veh and GetVehicleCurrentRpm(p_veh) or 0,
+                hp = GetEntityHealth(p_ped) - 100,
+                arm = GetPedArmour(p_ped),
                 talking = NetworkIsPlayerTalking(PlayerId()),
-                paused = IsPauseMenuActive()
+                paused = IsPauseMenuActive(),
+                mapPos = { x = map_anchor.x * 100, w = map_anchor.width * 100, y = map_anchor.y * 100 }
             })
         end
-        Wait(sleep)
+        Wait(sleep_time)
     end
 end)
