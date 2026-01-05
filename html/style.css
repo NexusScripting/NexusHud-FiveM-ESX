@@ -1,25 +1,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Roboto:wght@900&display=swap');
 
 :root {
-    --primary-color: #a020f0;   
-    --health-color: #ff4747;    
-    --armor-color: #4796ff;     
-    --hunger-color: #ff9f47;    
-    --thirst-color: #47e9ff;    
+    --primary: #a020f0;   
+    --health: #ff4747;    
+    --armor: #4796ff;     
+    --hunger: #ff9f47;    
+    --thirst: #47e9ff;    
 }
 
 body { margin: 0; padding: 0; overflow: hidden; font-family: 'Roboto', sans-serif; background: transparent !important; }
-#hud-wrapper { transition: opacity 0.3s ease; opacity: 1; width: 100vw; height: 100vh; }
-.hidden { opacity: 0 !important; }
+#hud-wrapper { transition: opacity 0.3s ease; width: 100vw; height: 100vh; }
 
 .top-right-container { position: absolute; top: 40px; right: 30px; display: flex; flex-direction: column; align-items: flex-end; }
 .branding-box { display: flex; flex-direction: column; align-items: center; width: 100%; }
-.nexus { color: var(--primary-color); font-family: 'Orbitron', sans-serif; font-size: 32px; text-shadow: 0 0 15px var(--primary-color); letter-spacing: 6px; }
+.nexus { color: var(--primary); font-family: 'Orbitron', sans-serif; font-size: 32px; text-shadow: 0 0 15px var(--primary); letter-spacing: 6px; }
 .roleplay { font-size: 52px; font-weight: 900; text-shadow: 0 2px 15px rgba(255,255,255,0.4); margin-top: -12px; color: white; }
 
 .money-box { margin-top: 15px; width: 100%; display: flex; flex-direction: column; align-items: flex-end; }
 .money-row { display: flex; align-items: center; justify-content: flex-end; margin: 3px 0; font-size: 26px; font-weight: 900; color: white; }
-.purple-icon { color: var(--primary-color); margin-left: 12px; filter: drop-shadow(0 0 5px var(--primary-color)); font-size: 28px; }
+.purple-icon { color: var(--primary); margin-left: 12px; filter: drop-shadow(0 0 5px var(--primary)); font-size: 28px; }
 #id-text { font-size: 32px; color: white; font-weight: 900; margin-top: 10px; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
 
 .status-wrapper { position: absolute; bottom: 21.5%; left: 2%; width: 13.5%; display: flex; justify-content: space-between; }
@@ -27,10 +26,10 @@ body { margin: 0; padding: 0; overflow: hidden; font-family: 'Roboto', sans-seri
 .icon-unit svg { position: absolute; width: 140%; height: 140%; transform: rotate(-90deg); overflow: visible; }
 .icon-unit circle { fill: none !important; stroke: rgba(255,255,255,0.05); stroke-width: 4; }
 .progress { fill: none !important; stroke-dasharray: 264; stroke-dashoffset: 264; transition: 0.4s ease-out; stroke-linecap: round; stroke-width: 6; }
-#health-circle { stroke: var(--health-color); filter: drop-shadow(0 0 10px var(--health-color)); }
-#armor-circle { stroke: var(--armor-color); filter: drop-shadow(0 0 10px var(--armor-color)); }
-#hunger-circle { stroke: var(--hunger-color); filter: drop-shadow(0 0 10px var(--hunger-color)); }
-#thirst-circle { stroke: var(--thirst-color); filter: drop-shadow(0 0 10px var(--thirst-color)); }
+#health-circle { stroke: var(--health); filter: drop-shadow(0 0 10px var(--health)); }
+#armor-circle { stroke: var(--armor); filter: drop-shadow(0 0 10px var(--armor)); }
+#hunger-circle { stroke: var(--hunger); filter: drop-shadow(0 0 10px var(--hunger)); }
+#thirst-circle { stroke: var(--thirst); filter: drop-shadow(0 0 10px var(--thirst)); }
 .status-icon { font-size: 18px; z-index: 5; position: absolute; color: white; filter: drop-shadow(0 0 4px rgba(0,0,0,0.9)); }
 
 #speedo-container { position: absolute; bottom: 45px; right: 180px; display: none; flex-direction: column; align-items: center; width: 170px; }
@@ -40,11 +39,11 @@ body { margin: 0; padding: 0; overflow: hidden; font-family: 'Roboto', sans-seri
 .gear-box { width: 38px; height: 38px; border: 2px solid rgba(255,255,255,0.25); background: rgba(0,0,0,0.3); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
 #gear-val { color: white; font-size: 22px; font-weight: 900; }
 .rpm-bar-bg { width: 100%; height: 5px; background: rgba(255,255,255,0.1); border-radius: 5px; overflow: hidden; }
-#rpm-bar-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #fff, var(--primary-color)); transition: width 0.1s linear; }
+#rpm-bar-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #fff, var(--primary)); transition: width 0.1s linear; }
 
 .mic-box { position: absolute; bottom: 45px; right: 60px; width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; }
 #mic { font-size: 45px; color: rgba(255,255,255,0.35); transition: 0.2s; }
 #mic.active { color: #00ff44; filter: drop-shadow(0 0 12px #00ff44); transform: scale(1.1); }
 
-.pulse-warning { animation: pulse-low 0.8s infinite alternate; }
-@keyframes pulse-low { from { transform: scale(1); } to { transform: scale(1.15); } }
+.pulse-warning { animation: p 0.8s infinite alternate; }
+@keyframes p { from { transform: scale(1); } to { transform: scale(1.15); } }
