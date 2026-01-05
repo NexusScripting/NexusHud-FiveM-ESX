@@ -9,12 +9,11 @@
 }
 
 body { 
-    margin: 0; 
-    padding: 0; 
-    overflow: hidden; 
-    font-family: 'Roboto', sans-serif; 
+    margin: 0; padding: 0; overflow: hidden; font-family: 'Roboto', sans-serif; 
     background: transparent !important;
     -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
     user-select: none;
 }
 
@@ -26,13 +25,24 @@ body {
 }
 
 body.edit-mode #edit-notify { display: block; }
-.drag-item { position: absolute; }
-.edit-mode .drag-item { outline: 2px dashed var(--primary); background: rgba(160, 32, 240, 0.25); cursor: move; padding: 8px; }
+
+/* FIX: Sorgt dafür, dass die lilanen Boxen nur so groß sind wie der Inhalt */
+.drag-item { 
+    position: absolute; 
+    width: fit-content; 
+    height: fit-content; 
+}
+
+.edit-mode .drag-item { 
+    outline: 2px dashed var(--primary); 
+    background: rgba(160, 32, 240, 0.25); 
+    cursor: move; 
+    padding: 8px; 
+}
 
 #drag-branding { top: 40px; right: 50px; }
 .branding-box { display: flex; flex-direction: column; align-items: center; margin-bottom: 15px; }
 
-/* Nexus & Roleplay Schrift maximal groß wie gewünscht */
 .nexus { color: var(--primary); font-family: 'Orbitron', sans-serif; font-size: 44px; text-shadow: 0 0 15px var(--primary); letter-spacing: 7px; }
 .roleplay { font-size: 58px; color: white; margin-top: -15px; font-weight: 900; }
 
@@ -42,22 +52,12 @@ body.edit-mode #edit-notify { display: block; }
 #id-text { font-size: 32px; color: white; font-weight: 900; margin-top: 6px; }
 
 #drag-status { 
-    display: flex; 
-    gap: 15px; 
-    justify-content: center;
-    align-items: center;
-    width: fit-content;
+    display: flex; gap: 15px; justify-content: center; align-items: center; width: fit-content; 
 }
 
 .icon-unit { 
-    width: 58px; 
-    height: 58px; 
-    position: relative; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    background: rgba(0,0,0,0.55); 
-    border-radius: 50%; 
+    width: 60px; height: 60px; position: relative; display: flex; align-items: center; 
+    justify-content: center; background: rgba(0,0,0,0.55); border-radius: 50%; 
 }
 
 .icon-unit svg { position: absolute; width: 100%; height: 100%; transform: rotate(-90deg); }
@@ -68,7 +68,7 @@ body.edit-mode #edit-notify { display: block; }
 #armor-circle { stroke: var(--armor); }
 #hunger-circle { stroke: var(--hunger); }
 #thirst-circle { stroke: var(--thirst); }
-.status-icon { color: white; font-size: 19px; z-index: 5; }
+.status-icon { color: white; font-size: 20px; z-index: 5; }
 
 #drag-speedo { bottom: 45px; right: 150px; }
 #speedo-container { display: none; flex-direction: column; align-items: center; }

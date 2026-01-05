@@ -1,6 +1,6 @@
 local ESX = exports['es_extended']:getSharedObject()
 local is_nui_ready = false
-local hud_edit_mode = false
+local hud_edit_active = false
 
 function GetMinimapAnchor()
     local aspect_ratio = GetAspectRatio(0)
@@ -19,18 +19,18 @@ function GetMinimapAnchor()
     return Minimap
 end
 
-local function UpdatePlayerMoney()
-    local pData = ESX.GetPlayerData()
-    if pData and pData.accounts then
-        local cash_amount, bank_amount = 0, 0
-        for _, acc in pairs(pData.accounts) do
-            if acc.name == 'money' or acc.name == 'cash' then cash_amount = acc.money
-            elseif acc.name == 'bank' then bank_amount = acc.money end
+local function UpdateClientMoney()
+    local xPlayer = ESX.GetPlayerData()
+    if xPlayer and xPlayer.accounts then
+        local cash, bank = 0, 0
+        for _, acc in pairs(xPlayer.accounts) do
+            if acc.name == 'money' or acc.name == 'cash' then cash = acc.money
+            elseif acc.name == 'bank' then bank = acc.money end
         end
         SendNUIMessage({
             action = "status",
-            cash = cash_amount, 
-            bank = bank_amount,
+            cash = cash, 
+            bank = bank,
             sid = GetPlayerServerId(PlayerId())
         })
     end
@@ -41,9 +41,9 @@ exports('SetHudVisible', function(state)
 end)
 
 RegisterCommand('edithud', function()
-    hud_edit_mode = not hud_edit_mode
-    SetNuiFocus(hud_edit_mode, hud_edit_mode)
-    SendNUIMessage({ action = "toggleEdit", state = hud_edit_mode })
+    hud_edit_active = not hud_edit_active
+    SetNuiFocus(hud_edit_active, hud_edit_active)
+    SendNUIMessage({ action = "toggleEdit", state = hud_edit_active })
 end)
 
 RegisterCommand('hudreset', function() 
@@ -51,7 +51,7 @@ RegisterCommand('hudreset', function()
 end)
 
 RegisterNUICallback('closeEdit', function(data, cb)
-    hud_edit_mode = false
+    hud_edit_active = false
     SetNuiFocus(false, false)
     SendNUIMessage({ action = "toggleEdit", state = false })
     cb('ok')
@@ -60,65 +60,64 @@ end)
 RegisterNUICallback('nuiReady', function(data, cb)
     is_nui_ready = true
     SendNUIMessage({ action = "init", colors = Config.Colors, branding = Config.Branding, settings = Config.Settings })
-    UpdatePlayerMoney()
+    UpdateClientMoney()
     cb('ok')
 end)
 
--- Hier ist der Fix für "not safe for net"
 RegisterNetEvent('esx:setAccountMoney')
 AddEventHandler('esx:setAccountMoney', function(account) 
-    UpdatePlayerMoney() 
+    UpdateClientMoney() 
 end)
 
 RegisterNetEvent('esx:playerLoaded')
 AddEventHandler('esx:playerLoaded', function(xPlayer)
-    UpdatePlayerMoney()
+    UpdateClientMoney()
 end)
 
-AddEventHandler('esx_status:onTick', function(all_stats)
-    local h_perc, t_perc = 0, 0
-    for i, s in pairs(all_stats) do
-        if s.name == 'hunger' then h_perc = s.percent
-        elseif s.name == 'thirst' then t_perc = s.percent end
+AddEventHandler('esx_status:onTick', function(stats)
+    local h, t = 0, 0
+    for i, s in pairs(stats) do
+        if s.name == 'hunger' then h = s.percent
+        elseif s.name == 'thirst' then t = s.percent end
     end
-    SendNUIMessage({ action = "updateStats", h = h_perc, t = t_perc })
+    SendNUIMessage({ action = "updateStats", h = h, t = t })
 end)
 
 CreateThread(function()
-    local refresh_timer = 0
+    local sync_timer = 0
     while true do
-        local sleep_time = 1200
+        local sleep = 1200
         if is_nui_ready then
             local p_ped = PlayerPedId()
             local p_veh = GetVehiclePedIsIn(p_ped, false)
-            local is_in_veh = (p_veh ~= 0 and GetPedInVehicleSeat(p_veh, -1) == p_ped)
+            local driving = (p_veh ~= 0 and GetPedInVehicleSeat(p_veh, -1) == p_ped)
             
-            if is_in_veh then 
-                sleep_time = 50 
+            if driving then 
+                sleep = 50 
             elseif NetworkIsPlayerTalking(PlayerId()) then
-                sleep_time = 220
+                sleep = 200
             end
             
-            refresh_timer = refresh_timer + sleep_time
-            if refresh_timer >= 5000 then -- Sync alle 5 Sek reicht dicke
-                UpdatePlayerMoney()
-                refresh_timer = 0 
+            sync_timer = sync_timer + sleep
+            if sync_timer >= 4500 then 
+                UpdateClientMoney()
+                sync_timer = 0 
             end
 
-            local map_anchor = GetMinimapAnchor()
+            local map = GetMinimapAnchor()
             SendNUIMessage({
                 action = "tick",
-                inVeh = is_in_veh,
-                spd = is_in_veh and math.floor(GetEntitySpeed(p_veh) * 3.6) or 0,
-                gear = is_in_veh and (GetVehicleCurrentGear(p_veh) == 0 and "R" or GetVehicleCurrentGear(p_veh)) or "N",
-                rpm = is_in_veh and GetVehicleCurrentRpm(p_veh) or 0,
+                inVeh = driving,
+                spd = driving and math.floor(GetEntitySpeed(p_veh) * 3.6) or 0,
+                gear = driving and (GetVehicleCurrentGear(p_veh) == 0 and "R" or GetVehicleCurrentGear(p_veh)) or "N",
+                rpm = driving and GetVehicleCurrentRpm(p_veh) or 0,
                 hp = GetEntityHealth(p_ped) - 100,
                 arm = GetPedArmour(p_ped),
                 talking = NetworkIsPlayerTalking(PlayerId()),
                 paused = IsPauseMenuActive(),
-                mapPos = { x = map_anchor.x * 100, w = map_anchor.width * 100, y = map_anchor.y * 100 }
+                mapPos = { x = map.x * 100, w = map.width * 100, y = map.y * 100 }
             })
         end
-        Wait(sleep_time)
+        Wait(sleep)
     end
 end)
