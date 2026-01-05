@@ -1,22 +1,20 @@
 fx_version 'cerulean'
 game 'gta5'
-lua54 'yes'
 
-author 'NexusDevelopment'
+author 'NexusScripting'
 description 'NexusHud'
-version '1.0.0'
+version '1.1.0'
 
-ui_page 'html/index.html'
+ui_page 'index.html'
+
+shared_script 'config.lua'
+
+client_scripts {
+    'client.lua'
+}
 
 files {
     'html/index.html',
     'html/style.css',
-    'html/script.js'
-}
-
-client_script 'client.lua'
-
-dependencies {
-    'es_extended',
-    'esx_status'
+    'script/script.js'
 }

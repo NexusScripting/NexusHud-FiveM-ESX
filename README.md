@@ -6,6 +6,7 @@ NexusHud is a clean interface for ESX servers that removes all black backgrounds
 - **Large ID Visibility:** Player ID is enlarged and mathematically centered.
 - **Status Gauges:** Circular rings for health, armor, food, and water.
 - **Auto-Speedometer:** Smooth UI that pops up automatically when driving.
+- **Performance:** 0.00ms in idle.
 
 ## Installation
 1. Download the repository.
@@ -13,8 +14,7 @@ NexusHud is a clean interface for ESX servers that removes all black backgrounds
 3. Add `ensure NexusHud` to your `server.cfg`.
 
 ## Customization
-You can change all colors and the server name directly in the `html/style.css` and `html/index.html` files.
-You can change the text of the ESC menu in client.lua in line 14.
+You can change all colors and the server name directly in the `config.lua` files.
 
 
 If you encounter any bugs feel free to reach out: https://discord.gg/8JZJ4WJUqH
