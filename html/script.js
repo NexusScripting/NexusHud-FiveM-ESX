@@ -64,14 +64,12 @@ window.addEventListener('message', (event) => {
     }
 
     if (payload.action === "tick") {
-        // Sicherstellen, dass das HUD angezeigt wird wenn nicht pausiert
         document.body.style.display = (payload.paused || forceHidden) ? 'none' : 'block';
         
         if (!isEditMode && payload.mapPos) {
             const statusBox = document.getElementById('drag-status');
             const savedPos = JSON.parse(localStorage.getItem('nexus_pos_v2') || '{}');
             if (!savedPos['drag-status']) {
-                // Ein Ticken weiter nach links (-3.6) für perfekte Symmetrie
                 statusBox.style.left = (payload.mapPos.x + (payload.mapPos.w / 2) - 3.6) + "%";
                 statusBox.style.top = (payload.mapPos.y - 4.1) + "%";
                 statusBox.style.transform = 'translateX(-50%)';
