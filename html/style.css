@@ -22,6 +22,7 @@ body { margin: 0; padding: 0; overflow: hidden; font-family: 'Roboto', sans-seri
 .icon-unit svg { position: absolute; width: 130%; height: 130%; transform: rotate(-90deg); overflow: visible; }
 .icon-unit circle { fill: none !important; stroke: rgba(0,0,0,0.4); stroke-width: 6; }
 .progress { fill: none !important; stroke-dasharray: 264; stroke-dashoffset: 264; transition: 0.4s ease-out; stroke-linecap: round; stroke-width: 8; }
+
 #health-circle { stroke: var(--health); filter: drop-shadow(0 0 10px var(--health)); }
 #armor-circle { stroke: var(--armor); filter: drop-shadow(0 0 10px var(--armor)); }
 #hunger-circle { stroke: var(--hunger); filter: drop-shadow(0 0 10px var(--hunger)); }

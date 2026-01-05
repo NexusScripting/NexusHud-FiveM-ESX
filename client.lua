@@ -1,25 +1,34 @@
-local ESX = exports['es_extended']:getSharedObject()
-local p, inV = nil, false
+local ESX = nil
+local isNuiReady = false
+
+CreateThread(function()
+    while ESX == nil do
+        local status, result = pcall(function() return exports['es_extended']:getSharedObject() end)
+        if status then ESX = result else TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end) end
+        Wait(100)
+    end
+end)
 
 function updateMoney()
-    local x = ESX.GetPlayerData()
+    if not ESX then return end
+    local data = ESX.GetPlayerData()
     local m, b = 0, 0
-    if x and x.accounts then
-        for _, acc in pairs(x.accounts) do
+    if data and data.accounts then
+        for _, acc in pairs(data.accounts) do
             if acc.name == 'money' or acc.name == 'cash' then m = acc.money
             elseif acc.name == 'bank' then b = acc.money end
         end
     end
     SendNUIMessage({
         action = "status",
-        cash = m,
+        cash = m, 
         bank = b,
         sid = GetPlayerServerId(PlayerId())
     })
 end
 
 function triggerInit()
-    Wait(500)
+    if not isNuiReady or not ESX then return end
     SendNUIMessage({
         action = "init",
         colors = Config.Colors,
@@ -28,26 +37,28 @@ function triggerInit()
     updateMoney()
 end
 
-CreateThread(function()
-    while not Config do Wait(0) end
-    AddTextEntry('FE_THDR_GTAO', Config.Branding.menu)
+RegisterNUICallback('nuiReady', function(data, cb)
+    isNuiReady = true
+    cb('ok')
+    CreateThread(function()
+        while ESX == nil or not ESX.IsPlayerLoaded() do Wait(100) end
+        triggerInit()
+    end)
 end)
 
 AddEventHandler('onClientResourceStart', function(res)
     if GetCurrentResourceName() ~= res then return end
-    if ESX.IsPlayerLoaded() then triggerInit() end
+    if isNuiReady and ESX and ESX.IsPlayerLoaded() then triggerInit() end
 end)
 
 RegisterNetEvent('esx:playerLoaded')
 AddEventHandler('esx:playerLoaded', function(x)
     ESX.PlayerData = x
-    triggerInit()
+    if isNuiReady then triggerInit() end
 end)
 
 RegisterNetEvent('esx:setAccountMoney')
-AddEventHandler('esx:setAccountMoney', function()
-    updateMoney()
-end)
+AddEventHandler('esx:setAccountMoney', function() updateMoney() end)
 
 AddEventHandler('esx_status:onTick', function(data)
     local h, t = 0, 0
@@ -55,46 +66,32 @@ AddEventHandler('esx_status:onTick', function(data)
         if s.name == 'hunger' then h = s.percent
         elseif s.name == 'thirst' then t = s.percent end
     end
-    SendNUIMessage({
-        action = "updateStats",
-        h = h,
-        t = t
-    })
+    SendNUIMessage({ action = "updateStats", h = h, t = t })
 end)
 
 CreateThread(function()
     while true do
-        p = PlayerPedId()
+        local p = PlayerPedId()
         local sleep = 500
-        local hp = GetEntityHealth(p) - 100
-        local arm = GetPedArmour(p)
-        if hp < 0 then hp = 0 end
-        
-        local v = GetVehiclePedIsIn(p, false)
-        local s, g, r = 0, 0, 0
-        
-        if v ~= 0 and GetPedInVehicleSeat(v, -1) == p then
-            inV = true
-            sleep = 100
-            s = math.floor(GetEntitySpeed(v) * 3.6)
-            g = GetVehicleCurrentGear(v)
-            r = GetVehicleCurrentRpm(v)
-            if s == 0 and g <= 1 then g = "N" end
-        else
-            inV = false
+        if isNuiReady then
+            local hp, arm = GetEntityHealth(p) - 100, GetPedArmour(p)
+            if hp < 0 then hp = 0 end
+            local v = GetVehiclePedIsIn(p, false)
+            local inV, s, g, r = false, 0, 0, 0
+            if v ~= 0 and GetPedInVehicleSeat(v, -1) == p then
+                inV, sleep = true, 100
+                s = math.floor(GetEntitySpeed(v) * 3.6)
+                g, r = GetVehicleCurrentGear(v), GetVehicleCurrentRpm(v)
+                if s == 0 and g <= 1 then g = "N" end
+            end
+            SendNUIMessage({
+                action = "tick",
+                inVeh = inV, spd = s, gear = g, rpm = r,
+                hp = hp, arm = arm,
+                talking = NetworkIsPlayerTalking(PlayerId()),
+                paused = IsPauseMenuActive()
+            })
         end
-
-        SendNUIMessage({
-            action = "tick",
-            inVeh = inV,
-            spd = s,
-            gear = g,
-            rpm = r,
-            hp = hp,
-            arm = arm,
-            talking = NetworkIsPlayerTalking(PlayerId()),
-            paused = IsPauseMenuActive()
-        })
         Wait(sleep)
     end
 end)
