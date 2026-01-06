@@ -12,7 +12,8 @@ NexusHud is a clean interface for ESX servers that removes all black backgrounds
 ## Installation
 1. Download the repository.
 2. Place the `NexusHud` folder into your resources.
-3. Add `ensure NexusHud` to your `server.cfg`.
+3. Place the `hud.sql` into your database.
+4. Add `ensure NexusHud` to your `server.cfg`.
 
 ## Customization
 You can change all colors and the server name directly in the `config.lua` files.

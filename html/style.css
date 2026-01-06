@@ -1,76 +1,38 @@
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;500;700&display=swap');
 
 :root {
-    --primary: #a020f0; 
-    --health: #ff4747; 
-    --armor: #4796ff; 
-    --hunger: #ff9f47; 
-    --thirst: #47e9ff;
+    --primary: #a020f0; --health: #ff4747; --armor: #4796ff; --hunger: #ff9f47; --thirst: #47e9ff;
 }
 
 body { 
     margin: 0; padding: 0; overflow: hidden; font-family: 'Roboto', sans-serif; 
-    background: transparent !important;
-    -webkit-user-select: none;
-    user-select: none;
+    background: transparent !important; -webkit-user-select: none; user-select: none;
 }
 
 #edit-notify {
-    display: none; position: absolute; top: 50px; left: 50%;
-    transform: translateX(-50%); background: rgba(0,0,0,0.85);
-    color: white; padding: 14px 30px; border-radius: 6px;
+    display: none; position: absolute; top: 50px; left: 50%; transform: translateX(-50%);
+    background: rgba(0,0,0,0.85); color: white; padding: 14px 30px; border-radius: 6px;
     font-weight: 700; border-bottom: 4px solid var(--primary); z-index: 1000;
 }
 
 body.edit-mode #edit-notify { display: block; }
-
-.drag-item { 
-    position: absolute; 
-    width: fit-content; 
-    height: fit-content; 
-}
-
-.edit-mode .drag-item { 
-    outline: 2px dashed var(--primary); 
-    background: rgba(160, 32, 240, 0.25); 
-    cursor: move; 
-    padding: 8px; 
-}
+.drag-item { position: absolute; width: fit-content; height: fit-content; }
+.edit-mode .drag-item { outline: 2px dashed var(--primary); background: rgba(160, 32, 240, 0.25); cursor: move; padding: 8px; }
 
 #drag-branding { top: 40px; right: 50px; }
-.branding-box { display: flex; flex-direction: column; align-items: center; margin-bottom: 10px; }
-
-.nexus { 
-    color: var(--primary); font-family: 'Orbitron', sans-serif; 
-    font-size: 40px; text-shadow: 0 0 12px var(--primary); 
-    letter-spacing: 7px; font-weight: 400; 
-}
-.roleplay { 
-    font-size: 54px; color: white; margin-top: -15px; 
-    font-weight: 700; letter-spacing: 2px;
-}
-
+.branding-box { display: flex; flex-direction: column; align-items: center; margin-bottom: 12px; }
+.nexus { color: var(--primary); font-family: 'Orbitron', sans-serif; font-size: 38px; text-shadow: 0 0 10px var(--primary); letter-spacing: 7px; }
+.roleplay { font-size: 52px; color: white; margin-top: -15px; font-weight: 700; letter-spacing: 2px; }
 .money-box { display: flex; flex-direction: column; align-items: flex-end; }
-.money-row { 
-    color: white; font-size: 28px; font-weight: 500; 
-    display: flex; align-items: center; margin-bottom: 4px; 
-}
-.purple-icon { color: var(--primary); margin-left: 14px; font-size: 22px; filter: drop-shadow(0 0 6px var(--primary)); }
+.money-row { color: white; font-size: 28px; font-weight: 500; display: flex; align-items: center; margin-bottom: 4px; }
+.purple-icon { color: var(--primary); margin-left: 14px; font-size: 22px; filter: drop-shadow(0 0 5px var(--primary)); }
 #id-text { font-size: 30px; color: white; font-weight: 700; margin-top: 6px; opacity: 0.9; }
 
-#drag-status { 
-    display: flex; gap: 15px; justify-content: center; align-items: center; width: fit-content; 
-}
-
-.icon-unit { 
-    width: 60px; height: 60px; position: relative; display: flex; align-items: center; 
-    justify-content: center; background: rgba(0,0,0,0.55); border-radius: 50%; 
-}
-
+#drag-status { display: flex; gap: 15px; justify-content: center; align-items: center; }
+.icon-unit { width: 60px; height: 60px; position: relative; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.5); border-radius: 50%; }
 .icon-unit svg { position: absolute; width: 100%; height: 100%; transform: rotate(-90deg); }
-.icon-unit circle { fill: none; stroke: rgba(255,255,255,0.12); stroke-width: 7; }
+.icon-unit circle { fill: none; stroke: rgba(255,255,255,0.1); stroke-width: 7; }
 .progress { stroke-dasharray: 264; stroke-dashoffset: 264; stroke-width: 9; transition: 0.35s; stroke-linecap: round; }
-
 #health-circle { stroke: var(--health); }
 #armor-circle { stroke: var(--armor); }
 #hunger-circle { stroke: var(--hunger); }
@@ -78,15 +40,44 @@ body.edit-mode #edit-notify { display: block; }
 .status-icon { color: white; font-size: 20px; z-index: 5; }
 
 #drag-speedo { bottom: 45px; right: 150px; }
-#speedo-container { display: none; flex-direction: column; align-items: center; }
-.speedo-main { display: flex; align-items: center; gap: 18px; }
-.speed-info { display: flex; flex-direction: column; align-items: center; }
-#speed-val { font-size: 65px; color: white; font-weight: 700; line-height: 0.8; }
-.speed-unit { font-size: 20px; color: #aaaaaa; font-weight: 500; margin-top: 5px; }
-.gear-box { border: 2px solid rgba(255,255,255,0.4); background: rgba(0,0,0,0.35); border-radius: 9px; padding: 7px 14px; color: white; font-weight: 700; font-size: 28px; }
-.rpm-bar-bg { width: 160px; height: 7px; background: rgba(255,255,255,0.15); margin-top: 12px; border-radius: 4px; overflow: hidden; }
-#rpm-bar-fill { height: 100%; background: linear-gradient(90deg, #ffffff 0%, #ffffff 15%, var(--primary) 35%); width: 0%; transition: 0.04s linear; box-shadow: 0 0 12px var(--primary); }
+#speedo-container { 
+    display: flex; flex-direction: column; align-items: center; 
+    opacity: 0; transform: translateY(40px);
+    transition: opacity 0.6s cubic-bezier(0.23, 1, 0.32, 1), transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+#speedo-container.visible { opacity: 1; transform: translateY(0); }
 
-#drag-mic { bottom: 60px; right: 70px; }
-#mic { font-size: 58px; color: rgba(255,255,255,0.35); transition: 0.25s; }
-#mic.active { color: #00ff44; filter: drop-shadow(0 0 15px #00ff44); }
+.speedo-main { display: flex; align-items: center; gap: 18px; }
+.speed-info { display: flex; flex-direction: column; align-items: center; width: 180px; }
+#speed-val { font-size: 65px; color: white; font-weight: 700; line-height: 0.8; font-family: 'Orbitron', sans-serif; font-variant-numeric: tabular-nums; text-align: center; }
+.speed-unit { font-size: 20px; color: #aaaaaa; font-weight: 500; margin-top: 5px; }
+.gear-box { border: 2px solid rgba(255,255,255,0.4); background: rgba(0,0,0,0.3); border-radius: 8px; padding: 7px 14px; color: white; font-weight: 700; font-size: 28px; font-family: 'Orbitron', sans-serif; }
+.rpm-bar-bg { width: 160px; height: 7px; background: rgba(255,255,255,0.15); margin-top: 12px; border-radius: 4px; overflow: hidden; }
+#rpm-bar-fill { height: 100%; background: linear-gradient(90deg, #ffffff 0%, var(--primary) 100%); width: 0%; transition: 0.1s linear; box-shadow: 0 0 12px var(--primary); }
+
+#mileage-container { margin-top: 10px; display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.5); padding: 5px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
+#mileage-val { font-family: 'Orbitron', sans-serif; font-size: 16px; color: var(--primary); font-weight: 700; font-variant-numeric: tabular-nums; }
+.mileage-icon { font-size: 13px; color: #ffffff; opacity: 0.7; }
+.mileage-unit { font-size: 11px; color: #aaaaaa; font-weight: 700; }
+
+#drag-mic { 
+    bottom: 60px; 
+    right: 70px; 
+    width: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#mic { 
+    width: 100%;
+    text-align: center;
+    font-size: 58px; 
+    color: rgba(255,255,255,0.35); 
+    transition: 0.25s; 
+}
+
+#mic.active { 
+    color: #00ff44; 
+    filter: drop-shadow(0 0 15px #00ff44); 
+}

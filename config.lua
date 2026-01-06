@@ -20,5 +20,6 @@ Config.Settings = {
     showHealth = true,
     showArmor = true,
     showHunger = true,
-    showThirst = true
+    showThirst = true,
+    showMileage = true
 }
