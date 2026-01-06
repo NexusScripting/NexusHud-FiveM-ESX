@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body style="background: transparent;">
-    <div id="edit-notify">HUD EDIT - ESC TO SAVE</div>
+    <div id="edit-notify">HUD EDITOR - ESC TO SAVE</div>
 
     <div id="hud-wrapper">
         <div id="drag-branding" class="drag-item">
@@ -22,10 +22,22 @@
         </div>
 
         <div id="drag-status" class="drag-item">
-            <div class="icon-unit"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42"></circle><circle id="health-circle" class="progress" cx="50" cy="50" r="42"></circle></svg><i class="fa-solid fa-heart status-icon"></i></div>
-            <div class="icon-unit"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42"></circle><circle id="armor-circle" class="progress" cx="50" cy="50" r="42"></circle></svg><i class="fa-solid fa-shield-halved status-icon"></i></div>
-            <div class="icon-unit"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42"></circle><circle id="hunger-circle" class="progress" cx="50" cy="50" r="42"></circle></svg><i class="fa-solid fa-utensils status-icon"></i></div>
-            <div class="icon-unit"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42"></circle><circle id="thirst-circle" class="progress" cx="50" cy="50" r="42"></circle></svg><i class="fa-solid fa-droplet status-icon"></i></div>
+            <div id="unit-health" class="icon-unit">
+                <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42"></circle><circle id="health-circle" class="progress" cx="50" cy="50" r="42"></circle></svg>
+                <i class="fa-solid fa-heart status-icon"></i>
+            </div>
+            <div id="unit-armor" class="icon-unit">
+                <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42"></circle><circle id="armor-circle" class="progress" cx="50" cy="50" r="42"></circle></svg>
+                <i class="fa-solid fa-shield-halved status-icon"></i>
+            </div>
+            <div id="unit-hunger" class="icon-unit">
+                <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42"></circle><circle id="hunger-circle" class="progress" cx="50" cy="50" r="42"></circle></svg>
+                <i class="fa-solid fa-utensils status-icon"></i>
+            </div>
+            <div id="unit-thirst" class="icon-unit">
+                <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42"></circle><circle id="thirst-circle" class="progress" cx="50" cy="50" r="42"></circle></svg>
+                <i class="fa-solid fa-droplet status-icon"></i>
+            </div>
         </div>
 
         <div id="drag-speedo" class="drag-item">

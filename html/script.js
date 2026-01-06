@@ -2,24 +2,24 @@ let isEditMode = false;
 let forceHidden = false;
 
 function loadPositions() {
-    const saved = JSON.parse(localStorage.getItem('nexus_pos_v2') || '{}');
-    Object.keys(saved).forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.style.top = saved[id].t;
-            el.style.left = saved[id].l;
-            el.style.right = 'auto';
-            el.style.bottom = 'auto';
-            el.style.transform = 'none';
+    const savedData = JSON.parse(localStorage.getItem('nexus_pos_v2') || '{}');
+    Object.keys(savedData).forEach(id => {
+        const itemElement = document.getElementById(id);
+        if (itemElement) {
+            itemElement.style.top = savedData[id].t;
+            itemElement.style.left = savedData[id].l;
+            itemElement.style.right = 'auto';
+            itemElement.style.bottom = 'auto';
+            itemElement.style.transform = 'none';
         }
     });
 }
 
 function updateCircle(id, val) {
-    const el = document.getElementById(id);
-    if (el) {
-        let offset = 264 - (val / 100 * 264);
-        el.style.strokeDashoffset = offset;
+    const c = document.getElementById(id);
+    if (c) {
+        let dashOffset = 264 - (val / 100 * 264);
+        c.style.strokeDashoffset = dashOffset;
     }
 }
 
@@ -31,7 +31,6 @@ window.addEventListener('message', (event) => {
         document.querySelectorAll('.drag-item').forEach(e => {
             e.style.top = ''; e.style.left = ''; e.style.right = ''; e.style.bottom = ''; e.style.transform = '';
         });
-        loadPositions(); 
         return;
     }
 
@@ -50,8 +49,15 @@ window.addEventListener('message', (event) => {
         }
         if (payload.settings) {
             document.getElementById('id-text').style.display = payload.settings.showID ? 'block' : 'none';
-            document.getElementById('drag-status').style.display = payload.settings.showStatus ? 'flex' : 'none';
             document.getElementById('drag-mic').style.display = payload.settings.showMic ? 'block' : 'none';
+
+            document.getElementById('unit-health').style.display = payload.settings.showHealth ? 'flex' : 'none';
+            document.getElementById('unit-armor').style.display = payload.settings.showArmor ? 'flex' : 'none';
+            document.getElementById('unit-hunger').style.display = payload.settings.showHunger ? 'flex' : 'none';
+            document.getElementById('unit-thirst').style.display = payload.settings.showThirst ? 'flex' : 'none';
+            
+            const showAny = payload.settings.showHealth || payload.settings.showArmor || payload.settings.showHunger || payload.settings.showThirst;
+            document.getElementById('drag-status').style.display = showAny ? 'flex' : 'none';
         }
         loadPositions();
     }
@@ -68,9 +74,9 @@ window.addEventListener('message', (event) => {
         
         if (!isEditMode && payload.mapPos) {
             const statusBox = document.getElementById('drag-status');
-            const savedPos = JSON.parse(localStorage.getItem('nexus_pos_v2') || '{}');
-            if (!savedPos['drag-status']) {
-                statusBox.style.left = (payload.mapPos.x + (payload.mapPos.w / 2) - 3.6) + "%";
+            const saved = JSON.parse(localStorage.getItem('nexus_pos_v2') || '{}');
+            if (!saved['drag-status']) {
+                statusBox.style.left = (payload.mapPos.x + (payload.mapPos.w / 2) - 3.1) + "%";
                 statusBox.style.top = (payload.mapPos.y - 4.1) + "%";
                 statusBox.style.transform = 'translateX(-50%)';
                 statusBox.style.bottom = 'auto';
@@ -81,13 +87,13 @@ window.addEventListener('message', (event) => {
         updateCircle('health-circle', payload.hp);
         updateCircle('armor-circle', payload.arm);
         
-        const vehHud = document.getElementById('speedo-container');
+        const speedo = document.getElementById('speedo-container');
         if (payload.inVeh) {
-            vehHud.style.display = 'flex';
+            speedo.style.display = 'flex';
             document.getElementById('speed-val').innerText = payload.spd;
             document.getElementById('gear-val').innerText = payload.gear;
             document.getElementById('rpm-bar-fill').style.width = (payload.rpm * 100) + "%";
-        } else { vehHud.style.display = 'none'; }
+        } else { speedo.style.display = 'none'; }
 
         const mic = document.getElementById('mic');
         if (payload.talking) {
@@ -111,25 +117,25 @@ window.addEventListener('message', (event) => {
     }
 });
 
-let current_drag = null;
+let active_item = null;
 document.addEventListener('mousedown', (e) => {
     if (!isEditMode) return;
-    current_drag = e.target.closest('.drag-item');
-    if (current_drag) current_drag.style.transform = 'none';
+    active_item = e.target.closest('.drag-item');
+    if (active_item) active_item.style.transform = 'none';
 });
 
 document.addEventListener('mousemove', (e) => {
-    if (!isEditMode || !current_drag) return;
-    current_drag.style.left = e.clientX - (current_drag.offsetWidth/2) + "px";
-    current_drag.style.top = e.clientY - (current_drag.offsetHeight/2) + "px";
+    if (!isEditMode || !active_item) return;
+    active_item.style.left = e.clientX - (active_item.offsetWidth/2) + "px";
+    active_item.style.top = e.clientY - (active_item.offsetHeight/2) + "px";
 });
 
 document.addEventListener('mouseup', () => {
-    if (current_drag) {
-        const speicher = JSON.parse(localStorage.getItem('nexus_pos_v2') || '{}');
-        speicher[current_drag.id] = { t: current_drag.style.top, l: current_drag.style.left };
-        localStorage.setItem('nexus_pos_v2', JSON.stringify(speicher));
-        current_drag = null;
+    if (active_item) {
+        const current_save = JSON.parse(localStorage.getItem('nexus_pos_v2') || '{}');
+        current_save[active_item.id] = { t: active_item.style.top, l: active_item.style.left };
+        localStorage.setItem('nexus_pos_v2', JSON.stringify(current_save));
+        active_item = null;
     }
 });
 

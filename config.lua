@@ -16,7 +16,9 @@ Config.Colors = {
 Config.Settings = {
     showMoney = true,
     showID = true,
-    showStatus = true,
-    showSpeedo = true,
-    showMic = true
+    showMic = true,
+    showHealth = true,
+    showArmor = true,
+    showHunger = true,
+    showThirst = true
 }
